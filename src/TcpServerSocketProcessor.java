@@ -28,8 +28,18 @@ public class TcpServerSocketProcessor implements Runnable{
                 System.out.flush();
             }
         } catch (IOException e) {
-            System.out.println( "Ошибка при чтении сообщения." );
+            System.out.println( "Reading error." );
             System.exit( -1 );
+        }
+        finally {
+            try{
+                System.out.println( "Cancel client" );
+                in.close();
+                out.close();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+
         }
     }
 

@@ -30,7 +30,7 @@ public class TcpServer {
         try {
             serverSocket = new ServerSocket( port );
         } catch (IOException e) {
-            System.out.println( "Порт занят: " + port ); System.exit( -1 );
+            System.out.println( "Port has been already used: " + port ); System.exit( -1 );
         }
     }
 
@@ -38,13 +38,13 @@ public class TcpServer {
         while (true) {
             try {
                Socket clientSocket = serverSocket.accept();
-               System.out.println( "Клиент подключен");
+               System.out.println( "Client connected.");
                new Thread( new TcpServerSocketProcessor( clientSocket ) ).start();
             } catch (IOException e) {
-                System.out.println( "Ошибка при подключении к порту: " + port );
+                System.out.println( "Error with port connection: " + port );
                 System.exit(-1);
             }catch (Throwable e){
-                System.out.println( "Ошибка при подключении к порту: " + port + ". Недоступны потоки чтения/записи." );
+                System.out.println( "Error with port connection: " + port + ". Input/Output streams are unavailable." );
                 System.exit(-1);
             }
 
