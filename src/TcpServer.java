@@ -78,6 +78,9 @@ public class TcpServer {
     public void start(){
         createServerSocket();
         createClientSocket();
+    }
+
+    public void accept(){
         getInputStream();
         readInputStream();
     }
