@@ -84,4 +84,8 @@ public class TcpServer {
         getInputStream();
         readInputStream();
     }
+
+    public void manyClients(){
+        
+    }
 }
