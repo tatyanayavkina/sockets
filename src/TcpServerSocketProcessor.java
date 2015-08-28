@@ -6,17 +6,23 @@ import java.net.Socket;
  */
 public class TcpServerSocketProcessor implements Runnable{
 
+    private final int id;
     private final Socket clientSocket;
+    private TcpServer tcpServer;
     private InputStream in;
     private OutputStream out;
     private BufferedReader reader;
+    private BufferedWriter writer;
 
-    public TcpServerSocketProcessor(Socket clientSocket) throws Throwable{
+    public TcpServerSocketProcessor(Socket clientSocket, int id, TcpServer tcpServer) throws Throwable{
+        this.id = id;
         this.clientSocket = clientSocket;
+        this.tcpServer = tcpServer;
 
         this.in = clientSocket.getInputStream();
         this.out = clientSocket.getOutputStream();
         this.reader = new BufferedReader( new InputStreamReader( this.in ) );
+        this.writer = new BufferedWriter( new OutputStreamWriter( this.out ) );
     }
 
     public void run(){
@@ -24,6 +30,8 @@ public class TcpServerSocketProcessor implements Runnable{
 
         try {
             while ( ( ln = reader.readLine() ) != null ) {
+                tcpServer.sendMessageToConnectedClients(id, ln);
+
                 System.out.println( ln );
                 System.out.flush();
             }
@@ -41,6 +49,16 @@ public class TcpServerSocketProcessor implements Runnable{
             }
 
         }
+    }
+
+    public void sendMessage(String message){
+        try{
+            writer.write(message + "\n");
+            writer.flush();
+        }catch(IOException e){
+            System.out.println("Message writing error.");
+        }
+
     }
 
 }
