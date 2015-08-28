@@ -30,6 +30,7 @@ public class TcpServerSocketProcessor implements Runnable{
         try {
             while ( ( ln = reader.readLine() ) != null ) {
                 tcpServer.sendMessageToConnectedClients(id, ln);
+                tcpServer.storeMessage(ln);
 
                 System.out.println( ln );
                 System.out.flush();

@@ -1,21 +1,20 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Татьяна on 21.08.2015.
  */
 public class TcpServer {
     private static final int DEFAULT_PORT = 9999;
+    private static final int MESSAGES_STORE_LIMITATION = 10;
     private  int connectionCounter;
 
     private final int port;
     private ServerSocket serverSocket = null;
     private Map<Integer, TcpServerSocketProcessor> connectionsMap;
+    private final ArrayList<String> messageList;
     /**********************************************************************************/
     /* Constructors */
 
@@ -24,6 +23,7 @@ public class TcpServer {
         this.port = DEFAULT_PORT;
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
+        this.messageList = new ArrayList(MESSAGES_STORE_LIMITATION);
     }
 
     /* construct TcpServer with port number */
@@ -31,6 +31,7 @@ public class TcpServer {
         this.port = port;
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
+        this.messageList = new ArrayList(MESSAGES_STORE_LIMITATION);
     }
 
     /**********************************************************************************/
@@ -88,6 +89,16 @@ public class TcpServer {
             }
         }
 
+    }
+
+    public void storeMessage(String message){
+        synchronized (messageList){
+            if (messageList.size() == MESSAGES_STORE_LIMITATION){
+                messageList.remove(0);
+            }
+
+            messageList.add(message);
+        }
     }
 
     public void removeConnection(int connectionId){
