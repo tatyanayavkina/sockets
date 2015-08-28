@@ -36,7 +36,6 @@ public class TcpServerSocketProcessor implements Runnable{
             }
         } catch (IOException e) {
             System.out.println( "Reading error." );
-            System.exit( -1 );
         }
         finally {
             try{
