@@ -9,8 +9,6 @@ public class TcpServerSocketProcessor implements Runnable{
     private final int id;
     private final Socket clientSocket;
     private TcpServer tcpServer;
-    private InputStream in;
-    private OutputStream out;
     private BufferedReader reader;
     private BufferedWriter writer;
 
@@ -19,10 +17,11 @@ public class TcpServerSocketProcessor implements Runnable{
         this.clientSocket = clientSocket;
         this.tcpServer = tcpServer;
 
-        this.in = clientSocket.getInputStream();
-        this.out = clientSocket.getOutputStream();
-        this.reader = new BufferedReader( new InputStreamReader( this.in ) );
-        this.writer = new BufferedWriter( new OutputStreamWriter( this.out ) );
+        InputStream in = clientSocket.getInputStream();
+        OutputStream out = clientSocket.getOutputStream();
+
+        this.reader = new BufferedReader( new InputStreamReader( in ) );
+        this.writer = new BufferedWriter( new OutputStreamWriter( out ) );
     }
 
     public void run(){
@@ -41,9 +40,10 @@ public class TcpServerSocketProcessor implements Runnable{
         }
         finally {
             try{
-                System.out.println( "Cancel client" );
-                in.close();
-                out.close();
+                System.out.println("Cancel client " + id);
+                reader.close();
+                writer.close();
+                tcpServer.removeConnection(id);
             }catch(IOException e){
                 e.printStackTrace();
             }

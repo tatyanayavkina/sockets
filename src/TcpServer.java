@@ -49,7 +49,7 @@ public class TcpServer {
             try {
                Socket clientSocket = serverSocket.accept();
                int connectionId = connectionCounter++;
-               System.out.println("Client connected.");
+               System.out.println("Client connected " + connectionId);
 
                TcpServerSocketProcessor connection = new TcpServerSocketProcessor( clientSocket, connectionId, this );
                connectionsMap.put(connectionId, connection);
@@ -88,6 +88,10 @@ public class TcpServer {
             }
         }
 
+    }
+
+    public void removeConnection(int connectionId){
+        connectionsMap.remove(connectionId);
     }
 
     public void start(){
