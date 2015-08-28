@@ -80,29 +80,46 @@ public class TcpServer {
         //send message to all connected clients except client with id
         Set<Map.Entry<Integer, TcpServerSocketProcessor>> set = connectionsMap.entrySet();
 
-        for (Map.Entry<Integer, TcpServerSocketProcessor> s : set) {
+        for ( Map.Entry<Integer, TcpServerSocketProcessor> s : set ) {
             Integer key = s.getKey();
 
             if(key != clientId){
                 TcpServerSocketProcessor socketProcessor = s.getValue();
-                socketProcessor.sendMessage(message);
+                socketProcessor.sendMessage( message );
             }
         }
 
     }
 
+    public void sendLastMessages(int id){
+        String lastMessages;
+        TcpServerSocketProcessor tcpServerSocketProcessor = connectionsMap.get(id);
+
+        StringBuilder strBuilder = new StringBuilder();
+        synchronized ( messageList ){
+            if( !messageList.isEmpty() ){
+                for( String message : messageList ){
+                    strBuilder.append(message);
+                    strBuilder.append("\n");
+                }
+                lastMessages = strBuilder.toString();
+                tcpServerSocketProcessor.sendMessage(lastMessages);
+            }
+        }
+    }
+
     public void storeMessage(String message){
-        synchronized (messageList){
-            if (messageList.size() == MESSAGES_STORE_LIMITATION){
+        synchronized ( messageList ){
+            if ( messageList.size() == MESSAGES_STORE_LIMITATION ){
                 messageList.remove(0);
             }
 
-            messageList.add(message);
+            messageList.add( message );
         }
     }
 
     public void removeConnection(int connectionId){
-        connectionsMap.remove(connectionId);
+        connectionsMap.remove( connectionId );
     }
 
     public void start(){

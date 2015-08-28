@@ -27,6 +27,9 @@ public class TcpServerSocketProcessor implements Runnable{
     public void run(){
         String ln = null;
 
+        // client has just connected to server, send him last 10 messages
+        tcpServer.sendLastMessages(id);
+
         try {
             while ( ( ln = reader.readLine() ) != null ) {
                 tcpServer.sendMessageToConnectedClients(id, ln);
