@@ -16,8 +16,8 @@ public class TcpClient {
 
     private String username;
     private Socket socket;
-    private MessageTransfer reader;
-    private MessageTransfer writer;
+    private MessageIOHandler reader;
+    private MessageIOHandler writer;
 
     /************************************************************************/
     /* Constructors */
@@ -55,8 +55,8 @@ public class TcpClient {
            in = socket.getInputStream();
            out = socket.getOutputStream();
 
-           reader = new MessageTransfer(in, System.out);
-           writer = new MessageTransfer(System.in, out, username);
+           reader = new MessageIOHandler(in, System.out);
+           writer = new MessageIOHandler(System.in, out, username);
        } catch(IOException ex){
            ex.printStackTrace();
        }
