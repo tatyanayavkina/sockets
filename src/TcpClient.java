@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -15,9 +16,10 @@ public class TcpClient {
     private int port;
 
     private String username;
+    private String IP;
     private Socket socket;
-    private MessageIOHandler reader;
-    private MessageIOHandler writer;
+    private MessageOutputHandler reader;
+    private MessageInputHandler writer;
 
     /************************************************************************/
     /* Constructors */
@@ -27,10 +29,11 @@ public class TcpClient {
         this.username = "Hohohoho";
     }
 
-    public TcpClient(String host, int port, String username){
+    public TcpClient(String host, int port, String username) throws IOException{
         this.host = host;
         this.port = port;
         this.username = username;
+        this.IP = InetAddress.getLocalHost().toString();
     }
 
     /***********************************************************************/
@@ -55,8 +58,8 @@ public class TcpClient {
            in = socket.getInputStream();
            out = socket.getOutputStream();
 
-           reader = new MessageIOHandler(in, System.out);
-           writer = new MessageIOHandler(System.in, out, username);
+           reader = new MessageOutputHandler(in, System.out);
+           writer = new MessageInputHandler(System.in, out, username, IP);
        } catch(IOException ex){
            ex.printStackTrace();
        }

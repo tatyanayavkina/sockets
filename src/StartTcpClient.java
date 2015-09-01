@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -7,19 +8,19 @@ import java.util.Scanner;
 public class StartTcpClient {
 
     public static void main(String[] args) {
-        String username = "Hohohoho";
         System.out.println("Enter your name, please");
 
         Scanner scanner = new Scanner(System.in);
+        String username = scanner.next();
         /* Read user input */
         try{
-            username = scanner.next();
-        }catch(InputMismatchException e){
-            System.out.println("Sorry, your input is incorrect. You must enter 1 or 2. Try again later.");
+            TcpClient tcpClient = new TcpClient("localhost", 9999, username);
+            tcpClient.start();
+        }catch(IOException e){
+            System.out.println("Sorry, you can not chatting");
             System.exit(-1);
         }
 
-        TcpClient tcpClient = new TcpClient("localhost", 9999, username);
-        tcpClient.start();
+
     }
 }
