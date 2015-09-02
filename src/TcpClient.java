@@ -55,11 +55,12 @@ public class TcpClient {
        InputStream in = null;
        OutputStream out = null;
        try{
-           in = socket.getInputStream();
            out = socket.getOutputStream();
-
-           reader = new MessageInHandler(in, System.out);
            writer = new MessageOutHandler(System.in, out, username, IP);
+           writer.flush();
+
+           in = socket.getInputStream();
+           reader = new MessageInHandler(in, System.out);
        } catch(IOException ex){
            ex.printStackTrace();
        }
@@ -72,7 +73,7 @@ public class TcpClient {
         createSocket();
         createReaderWriter();
 
-//        new Thread(reader).start();
+        new Thread(reader).start();
         new Thread(writer).start();
     }
 }

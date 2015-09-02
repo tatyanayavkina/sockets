@@ -8,23 +8,33 @@ import java.util.ArrayList;
 public class TcpServerSocketProcessor implements Runnable{
 
     private final int id;
-    private boolean connected;
     private Socket clientSocket;
     private TcpServer tcpServer;
+    private InputStream in;
+    private OutputStream out;
+
     private ObjectInputStream reader;
     private ObjectOutputStream writer;
 
     public TcpServerSocketProcessor(Socket clientSocket, int id, TcpServer tcpServer) throws Throwable{
         this.id = id;
-        this.connected = true;
         this.clientSocket = clientSocket;
         this.tcpServer = tcpServer;
 
-        InputStream in = clientSocket.getInputStream();
-        OutputStream out = clientSocket.getOutputStream();
+        this.in = clientSocket.getInputStream();
+        this.out = clientSocket.getOutputStream();
 
         this.reader = new ObjectInputStream( in );
         this.writer = new ObjectOutputStream( out );
+    }
+
+    public void flush(){
+        try{
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Headers sending error");
+            System.exit(-1);
+        }
     }
 
     public void run(){
@@ -32,10 +42,8 @@ public class TcpServerSocketProcessor implements Runnable{
 
         // client has just connected to server, send him last 10 messages
         tcpServer.sendLastMessages(id);
-
         try {
-            while (connected) {
-                messageList = (ArrayList<Message>) reader.readObject();
+            while ( (messageList = (ArrayList<Message>) reader.readObject()) != null) {
                 tcpServer.sendMessageToConnectedClients(id, messageList);
 
                 for(Message message : messageList){

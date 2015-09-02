@@ -17,12 +17,20 @@ public class MessageOutHandler implements Runnable {
         this.IP = IP;
     }
 
+    public void flush(){
+        try{
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Headers sending error");
+            System.exit(-1);
+        }
+
+    }
+
     public void run(){
         String ln;
         try {
-            System.out.println("in run ...");
             while ( ( ln = reader.readLine() ) != null ) {
-                System.out.println("in while run ...");
                 Message message = new Message(author, IP, ln);
                 ArrayList<Message> messageList = new ArrayList<Message>();
                 messageList.add(message);

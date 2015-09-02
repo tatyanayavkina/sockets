@@ -48,14 +48,15 @@ public class TcpServer {
     private void createClientSocket(){
         while (true) {
             try {
+
                Socket clientSocket = serverSocket.accept();
                int connectionId = connectionCounter++;
                System.out.println("Client connected " + connectionId);
-
                TcpServerSocketProcessor connection = new TcpServerSocketProcessor( clientSocket, connectionId, this );
+               connection.flush();
                connectionsMap.put(connectionId, connection);
-
                new Thread( connection ).start();
+
             } catch (IOException e) {
 
                 System.out.println( "Error with port connection: " + port );
