@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TcpServer {
     private static final int DEFAULT_PORT = 9999;
     private static final int MESSAGES_STORE_LIMITATION = 10;
-    private static final int CONNECTIONS_LIMITATION = 2;
+    private static final int CONNECTIONS_LIMITATION = 10;
     private  int connectionCounter;
 
     private ThreadPoolExecutor threadPoolExecutor;
@@ -51,12 +51,13 @@ public class TcpServer {
     private void createClientSocket(){
         while (true) {
             try {
-               // do not connect new clients when all threads are busy
-               if ( threadPoolExecutor.getActiveCount() == CONNECTIONS_LIMITATION){
-                   continue;
-               }
-
                Socket clientSocket = serverSocket.accept();
+                // do not connect new clients when all threads are busy
+                if ( threadPoolExecutor.getActiveCount() == CONNECTIONS_LIMITATION){
+                    clientSocket.close();
+                    continue;
+                }
+
                int connectionId = connectionCounter++;
                System.out.println("Client connected " + connectionId);
                TcpServerSocketProcessor connection = new TcpServerSocketProcessor( clientSocket, connectionId, this );

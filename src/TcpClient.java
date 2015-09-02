@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
@@ -61,7 +62,10 @@ public class TcpClient {
 
            in = socket.getInputStream();
            reader = new MessageInHandler(in, System.out);
-       } catch(IOException ex){
+       } catch( SocketException ex){
+           System.out.println("Sorry, server is busy.");
+           System.exit(-1);
+       } catch( IOException ex ){
            ex.printStackTrace();
        }
    }
