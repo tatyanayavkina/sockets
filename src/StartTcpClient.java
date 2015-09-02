@@ -12,6 +12,7 @@ public class StartTcpClient {
 
         Scanner scanner = new Scanner(System.in);
         String username = scanner.next();
+
         /* Read user input */
         try{
             TcpClient tcpClient = new TcpClient("localhost", 9999, username);

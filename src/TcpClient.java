@@ -72,7 +72,7 @@ public class TcpClient {
         createSocket();
         createReaderWriter();
 
-        new Thread(reader).start();
+//        new Thread(reader).start();
         new Thread(writer).start();
     }
 }

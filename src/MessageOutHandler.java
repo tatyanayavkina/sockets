@@ -20,7 +20,9 @@ public class MessageOutHandler implements Runnable {
     public void run(){
         String ln;
         try {
+            System.out.println("in run ...");
             while ( ( ln = reader.readLine() ) != null ) {
+                System.out.println("in while run ...");
                 Message message = new Message(author, IP, ln);
                 ArrayList<Message> messageList = new ArrayList<Message>();
                 messageList.add(message);

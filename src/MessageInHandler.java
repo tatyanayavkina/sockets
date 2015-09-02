@@ -17,7 +17,8 @@ public class MessageInHandler implements Runnable{
         ArrayList<Message> messageList;
         String outStr;
         try {
-            while ( ( messageList = (ArrayList<Message>) reader.readObject() ) != null ) {
+            while ( (messageList = (ArrayList<Message>) reader.readObject()) != null ) {
+
                 for(Message message: messageList){
                     outStr = message.toOutStr();
                     writer.write(outStr);
