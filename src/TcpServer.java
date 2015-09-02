@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by Татьяна on 21.08.2015.
@@ -9,7 +11,10 @@ import java.util.*;
 public class TcpServer {
     private static final int DEFAULT_PORT = 9999;
     private static final int MESSAGES_STORE_LIMITATION = 10;
+    private static final int CONNECTIONS_LIMITATION = 2;
     private  int connectionCounter;
+
+    private ThreadPoolExecutor threadPoolExecutor;
 
     private final int port;
     private ServerSocket serverSocket = null;
@@ -18,20 +23,18 @@ public class TcpServer {
     /**********************************************************************************/
     /* Constructors */
 
-    /* default constructor*/
-    public TcpServer(){
-        this.port = DEFAULT_PORT;
-        this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
-        this.connectionCounter = 0;
-        this.messageList = new ArrayList<Message>(MESSAGES_STORE_LIMITATION);
-    }
-
     /* construct TcpServer with port number */
     public TcpServer( int port ){
         this.port = port;
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
         this.messageList = new ArrayList<Message>(MESSAGES_STORE_LIMITATION);
+        this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(CONNECTIONS_LIMITATION);
+    }
+
+    /* default constructor*/
+    public TcpServer(){
+        this(DEFAULT_PORT);
     }
 
     /**********************************************************************************/
@@ -48,6 +51,10 @@ public class TcpServer {
     private void createClientSocket(){
         while (true) {
             try {
+               // do not connect new clients when all threads are busy
+               if ( threadPoolExecutor.getActiveCount() == CONNECTIONS_LIMITATION){
+                   continue;
+               }
 
                Socket clientSocket = serverSocket.accept();
                int connectionId = connectionCounter++;
@@ -55,7 +62,7 @@ public class TcpServer {
                TcpServerSocketProcessor connection = new TcpServerSocketProcessor( clientSocket, connectionId, this );
                connection.flush();
                connectionsMap.put(connectionId, connection);
-               new Thread( connection ).start();
+               threadPoolExecutor.execute( connection );
 
             } catch (IOException e) {
 
