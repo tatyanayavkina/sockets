@@ -29,6 +29,9 @@ public class MessageOutHandler implements Runnable {
                 writer.writeObject(messageList);
                 writer.flush();
             }
+
+            reader.close();
+            writer.close();
         } catch (IOException e) {
             System.out.println("Ошибка при записи сообщения.");
             System.exit(-1);
