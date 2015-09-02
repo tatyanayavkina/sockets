@@ -4,11 +4,11 @@ import java.util.ArrayList;
 /**
  * Created by Татьяна on 01.09.2015.
  */
-public class MessageOutputHandler implements Runnable{
+public class MessageInHandler implements Runnable{
     private BufferedWriter writer;
     private ObjectInputStream reader;
 
-    public MessageOutputHandler(InputStream in, OutputStream out) throws IOException{
+    public MessageInHandler(InputStream in, OutputStream out) throws IOException{
         this.reader = new ObjectInputStream( in );
         this.writer =  new BufferedWriter( new OutputStreamWriter( out ) );
     }

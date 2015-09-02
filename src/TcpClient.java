@@ -18,8 +18,8 @@ public class TcpClient {
     private String username;
     private String IP;
     private Socket socket;
-    private MessageOutputHandler reader;
-    private MessageInputHandler writer;
+    private MessageInHandler reader;
+    private MessageOutHandler writer;
 
     /************************************************************************/
     /* Constructors */
@@ -58,8 +58,8 @@ public class TcpClient {
            in = socket.getInputStream();
            out = socket.getOutputStream();
 
-           reader = new MessageOutputHandler(in, System.out);
-           writer = new MessageInputHandler(System.in, out, username, IP);
+           reader = new MessageInHandler(in, System.out);
+           writer = new MessageOutHandler(System.in, out, username, IP);
        } catch(IOException ex){
            ex.printStackTrace();
        }

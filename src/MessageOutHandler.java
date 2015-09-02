@@ -4,13 +4,13 @@ import java.util.ArrayList;
 /**
  * Created by Татьяна on 01.09.2015.
  */
-public class MessageInputHandler implements Runnable {
+public class MessageOutHandler implements Runnable {
     private ObjectOutputStream writer;
     private BufferedReader reader;
     private String author;
     private String IP;
 
-    public MessageInputHandler(InputStream in, OutputStream out, String author, String IP) throws IOException{
+    public MessageOutHandler(InputStream in, OutputStream out, String author, String IP) throws IOException{
         this.reader = new BufferedReader( new InputStreamReader( in ) );
         this.writer =  new ObjectOutputStream( out );
         this.author = author;

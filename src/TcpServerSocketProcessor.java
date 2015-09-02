@@ -8,13 +8,15 @@ import java.util.ArrayList;
 public class TcpServerSocketProcessor implements Runnable{
 
     private final int id;
-    private final Socket clientSocket;
+    private boolean connected;
+    private Socket clientSocket;
     private TcpServer tcpServer;
     private ObjectInputStream reader;
     private ObjectOutputStream writer;
 
     public TcpServerSocketProcessor(Socket clientSocket, int id, TcpServer tcpServer) throws Throwable{
         this.id = id;
+        this.connected = true;
         this.clientSocket = clientSocket;
         this.tcpServer = tcpServer;
 
@@ -32,7 +34,8 @@ public class TcpServerSocketProcessor implements Runnable{
         tcpServer.sendLastMessages(id);
 
         try {
-            while ( ( messageList = (ArrayList<Message>) reader.readObject() ) != null ) {
+            while (connected) {
+                messageList = (ArrayList<Message>) reader.readObject();
                 tcpServer.sendMessageToConnectedClients(id, messageList);
 
                 for(Message message : messageList){
@@ -42,10 +45,9 @@ public class TcpServerSocketProcessor implements Runnable{
                     System.out.flush();
                 }
             }
-        } catch (IOException e) {
-            System.out.println( "Reading error." );
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
+            System.out.println( "Serialization error." );
+        } catch (IOException e){
             System.out.println( "Reading error." );
         }
         finally {

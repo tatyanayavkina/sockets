@@ -23,7 +23,7 @@ public class TcpServer {
         this.port = DEFAULT_PORT;
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
-        this.messageList = new ArrayList(MESSAGES_STORE_LIMITATION);
+        this.messageList = new ArrayList<Message>(MESSAGES_STORE_LIMITATION);
     }
 
     /* construct TcpServer with port number */
@@ -31,7 +31,7 @@ public class TcpServer {
         this.port = port;
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
-        this.messageList = new ArrayList(MESSAGES_STORE_LIMITATION);
+        this.messageList = new ArrayList<Message>(MESSAGES_STORE_LIMITATION);
     }
 
     /**********************************************************************************/
@@ -92,10 +92,8 @@ public class TcpServer {
     }
 
     public void sendLastMessages(int id){
-        String lastMessages;
         TcpServerSocketProcessor tcpServerSocketProcessor = connectionsMap.get(id);
 
-        StringBuilder strBuilder = new StringBuilder();
         synchronized ( messageList ){
             if( !messageList.isEmpty() ){
                 tcpServerSocketProcessor.sendMessage(messageList);
