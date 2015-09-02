@@ -14,7 +14,7 @@ public class TcpServer {
     private final int port;
     private ServerSocket serverSocket = null;
     private Map<Integer, TcpServerSocketProcessor> connectionsMap;
-    private final ArrayList<String> messageList;
+    private final ArrayList<Message> messageList;
     /**********************************************************************************/
     /* Constructors */
 
@@ -76,7 +76,7 @@ public class TcpServer {
     /**********************************************************************************/
     /* Public methods */
 
-    public void sendMessageToConnectedClients(int clientId, String message){
+    public void sendMessageToConnectedClients(int clientId,  ArrayList<Message> messageList){
         //send message to all connected clients except client with id
         Set<Map.Entry<Integer, TcpServerSocketProcessor>> set = connectionsMap.entrySet();
 
@@ -85,7 +85,7 @@ public class TcpServer {
 
             if(key != clientId){
                 TcpServerSocketProcessor socketProcessor = s.getValue();
-                socketProcessor.sendMessage( message );
+                socketProcessor.sendMessage( messageList );
             }
         }
 
@@ -98,17 +98,12 @@ public class TcpServer {
         StringBuilder strBuilder = new StringBuilder();
         synchronized ( messageList ){
             if( !messageList.isEmpty() ){
-                for( String message : messageList ){
-                    strBuilder.append(message);
-                    strBuilder.append("\n");
-                }
-                lastMessages = strBuilder.toString();
-                tcpServerSocketProcessor.sendMessage(lastMessages);
+                tcpServerSocketProcessor.sendMessage(messageList);
             }
         }
     }
 
-    public void storeMessage(String message){
+    public void storeMessage(Message message){
         synchronized ( messageList ){
             if ( messageList.size() == MESSAGES_STORE_LIMITATION ){
                 messageList.remove(0);

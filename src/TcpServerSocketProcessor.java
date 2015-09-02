@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Created by Татьяна on 21.08.2015.
@@ -9,8 +10,8 @@ public class TcpServerSocketProcessor implements Runnable{
     private final int id;
     private final Socket clientSocket;
     private TcpServer tcpServer;
-    private BufferedReader reader;
-    private BufferedWriter writer;
+    private ObjectInputStream reader;
+    private ObjectOutputStream writer;
 
     public TcpServerSocketProcessor(Socket clientSocket, int id, TcpServer tcpServer) throws Throwable{
         this.id = id;
@@ -20,25 +21,31 @@ public class TcpServerSocketProcessor implements Runnable{
         InputStream in = clientSocket.getInputStream();
         OutputStream out = clientSocket.getOutputStream();
 
-        this.reader = new BufferedReader( new InputStreamReader( in ) );
-        this.writer = new BufferedWriter( new OutputStreamWriter( out ) );
+        this.reader = new ObjectInputStream( in );
+        this.writer = new ObjectOutputStream( out );
     }
 
     public void run(){
-        String ln = null;
+        ArrayList<Message> messageList;
 
         // client has just connected to server, send him last 10 messages
         tcpServer.sendLastMessages(id);
 
         try {
-            while ( ( ln = reader.readLine() ) != null ) {
-                tcpServer.sendMessageToConnectedClients(id, ln);
-                tcpServer.storeMessage(ln);
+            while ( ( messageList = (ArrayList<Message>) reader.readObject() ) != null ) {
+                tcpServer.sendMessageToConnectedClients(id, messageList);
 
-                System.out.println( ln );
-                System.out.flush();
+                for(Message message : messageList){
+                    tcpServer.storeMessage(message);
+
+                    System.out.println( message.toOutStr() );
+                    System.out.flush();
+                }
             }
         } catch (IOException e) {
+            System.out.println( "Reading error." );
+        }
+        catch (ClassNotFoundException e) {
             System.out.println( "Reading error." );
         }
         finally {
@@ -54,9 +61,9 @@ public class TcpServerSocketProcessor implements Runnable{
         }
     }
 
-    public void sendMessage(String message){
+    public void sendMessage( ArrayList<Message> messageList){
         try{
-            writer.write(message + "\n");
+            writer.writeObject(messageList);
             writer.flush();
         }catch(IOException e){
             System.out.println("Message writing error.");

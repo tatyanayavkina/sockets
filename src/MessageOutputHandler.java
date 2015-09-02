@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Created by Татьяна on 01.09.2015.
@@ -13,13 +14,15 @@ public class MessageOutputHandler implements Runnable{
     }
 
     public void run(){
-        Message message;
+        ArrayList<Message> messageList;
         String outStr;
         try {
-            while ( ( message = (Message) reader.readObject() ) != null ) {
-                outStr = message.toOutStr();
-                writer.write(outStr);
-                writer.flush();
+            while ( ( messageList = (ArrayList<Message>) reader.readObject() ) != null ) {
+                for(Message message: messageList){
+                    outStr = message.toOutStr();
+                    writer.write(outStr);
+                    writer.flush();
+                }
             }
         } catch (IOException e) {
             System.out.println("Ошибка при записи сообщения.");

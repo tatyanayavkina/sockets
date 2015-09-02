@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Created by Татьяна on 01.09.2015.
@@ -21,7 +22,9 @@ public class MessageInputHandler implements Runnable {
         try {
             while ( ( ln = reader.readLine() ) != null ) {
                 Message message = new Message(author, IP, ln);
-                writer.writeObject(message);
+                ArrayList<Message> messageList = new ArrayList<Message>();
+                messageList.add(message);
+                writer.writeObject(messageList);
                 writer.flush();
             }
         } catch (IOException e) {
