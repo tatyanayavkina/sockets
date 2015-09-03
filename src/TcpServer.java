@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TcpServer {
     private final int port;
     private ServerSocket serverSocket = null;
+    private HashMap<String,String> users;
     private Map<Integer, TcpServerSocketProcessor> connectionsMap;
     private final ArrayList<Message> messageList;
     private final int messageStoreLimit;
@@ -21,10 +22,11 @@ public class TcpServer {
 
     /**********************************************************************************/
 
-    public TcpServer( Config config ){
+    public TcpServer( Config config, HashMap<String,String> users){
         this.port = config.getPort();
         this.messageStoreLimit = config.getMessageLimit();
         this.connectionLimit = config.getConnectionLimit();
+        this.users = users;
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
         this.messageList = new ArrayList<Message>(messageStoreLimit);
