@@ -63,6 +63,7 @@ public class TcpServerSocketProcessor implements Runnable{
                 System.out.println("Cancel client " + id);
                 reader.close();
                 writer.close();
+                clientSocket.close();
                 tcpServer.removeConnection(id);
             }catch(IOException e){
                 e.printStackTrace();

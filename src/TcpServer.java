@@ -121,6 +121,18 @@ public class TcpServer {
         connectionsMap.remove( connectionId );
     }
 
+    public boolean isUserRegistered(String username, String password){
+        boolean isRegistered = false;
+        if (users.containsKey(username)){
+            String userPass = users.get(username);
+            if (userPass.equals(password)){
+                isRegistered = true;
+            }
+        }
+
+        return isRegistered;
+    }
+
     public void start(){
         createServerSocket();
         createClientSocket();
