@@ -9,32 +9,26 @@ import java.util.concurrent.ThreadPoolExecutor;
  * Created by Татьяна on 21.08.2015.
  */
 public class TcpServer {
-    private static final int DEFAULT_PORT = 9999;
-    private static final int MESSAGES_STORE_LIMITATION = 10;
-    private static final int CONNECTIONS_LIMITATION = 10;
-    private  int connectionCounter;
-
-    private ThreadPoolExecutor threadPoolExecutor;
-
     private final int port;
     private ServerSocket serverSocket = null;
     private Map<Integer, TcpServerSocketProcessor> connectionsMap;
     private final ArrayList<Message> messageList;
-    /**********************************************************************************/
-    /* Constructors */
+    private final int messageStoreLimit;
+    private  final int connectionLimit;
+    private  int connectionCounter;
+    private ThreadPoolExecutor threadPoolExecutor;
 
-    /* construct TcpServer with port number */
-    public TcpServer( int port ){
-        this.port = port;
+
+    /**********************************************************************************/
+
+    public TcpServer( Config config ){
+        this.port = config.getPort();
+        this.messageStoreLimit = config.getMessageLimit();
+        this.connectionLimit = config.getConnectionLimit();
         this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
         this.connectionCounter = 0;
-        this.messageList = new ArrayList<Message>(MESSAGES_STORE_LIMITATION);
-        this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(CONNECTIONS_LIMITATION);
-    }
-
-    /* default constructor*/
-    public TcpServer(){
-        this(DEFAULT_PORT);
+        this.messageList = new ArrayList<Message>(messageStoreLimit);
+        this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(connectionLimit);
     }
 
     /**********************************************************************************/
@@ -44,7 +38,8 @@ public class TcpServer {
         try {
             serverSocket = new ServerSocket( port );
         } catch (IOException e) {
-            System.out.println( "Port has been already used: " + port ); System.exit( -1 );
+            System.out.println( "Port has been already used: " + port );
+            System.exit( -1 );
         }
     }
 
@@ -53,7 +48,7 @@ public class TcpServer {
             try {
                Socket clientSocket = serverSocket.accept();
                 // do not connect new clients when all threads are busy
-                if ( threadPoolExecutor.getActiveCount() == CONNECTIONS_LIMITATION){
+                if ( threadPoolExecutor.getActiveCount() == connectionLimit){
                     clientSocket.close();
                     continue;
                 }
@@ -112,7 +107,7 @@ public class TcpServer {
 
     public void storeMessage(Message message){
         synchronized ( messageList ){
-            if ( messageList.size() == MESSAGES_STORE_LIMITATION ){
+            if ( messageList.size() == messageStoreLimit){
                 messageList.remove(0);
             }
 

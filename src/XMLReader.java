@@ -2,7 +2,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.io.File;
 
@@ -10,7 +9,7 @@ import java.io.File;
  * Created by Татьяна on 03.09.2015.
  */
 public class XMLReader {
-    private static final String pathToParams = "/config/params.xml";
+    private static final String pathToParams = "params.xml";
     private static final String port = "port";
     private static final String message = "messagelimit";
     private static final String connection = "connectionlimit";
