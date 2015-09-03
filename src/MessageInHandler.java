@@ -38,4 +38,8 @@ public class MessageInHandler implements Runnable{
             System.exit(-1);
         }
     }
+
+    public void getServerResponse(){
+
+    }
 }

@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -46,8 +48,15 @@ public class MessageOutHandler implements Runnable {
         }
     }
 
-    private void sendCredentials(){
-        
+    public void sendCredentials(String username, String password){
+        Pair<String,String> credentials = new Pair<String,String>(username, password);
+        try{
+            writer.writeObject(credentials);
+            writer.flush();
+        } catch (IOException e){
+            System.out.println("Sorry, connection problems");
+        }
+
     }
 }
 

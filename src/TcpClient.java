@@ -63,12 +63,18 @@ public class TcpClient {
        }
    }
 
+   private void authorize(){
+       writer.sendCredentials(username, password);
+       reader.getServerResponse();
+   }
+
     /**********************************************************************/
     /* Public methods */
 
     public void start(){
         createSocket();
         createReaderWriter();
+        authorize();
 
         new Thread(reader).start();
         new Thread(writer).start();
