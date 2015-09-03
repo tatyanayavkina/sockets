@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <params>
     <port>9999</port>
-    <messageslimitat>10</messageslimitat>
+    <messageslimit>10</messageslimit>
     <connectionlimit>10</connectionlimit>
 </params>
