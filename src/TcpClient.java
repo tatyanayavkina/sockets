@@ -10,30 +10,23 @@ import java.net.UnknownHostException;
  * Created by Татьяна on 21.08.2015.
  */
 public class TcpClient {
-    private static final String DEFAULT_HOST = "localhost";
-    private static final int DEFAULT_PORT = 9999;
-
     private String host;
     private int port;
 
     private String username;
+    private String password;
     private String IP;
     private Socket socket;
     private MessageInHandler reader;
     private MessageOutHandler writer;
 
     /************************************************************************/
-    /* Constructors */
-    public TcpClient(){
-        this.host = DEFAULT_HOST;
-        this.port = DEFAULT_PORT;
-        this.username = "Hohohoho";
-    }
 
-    public TcpClient(String host, int port, String username) throws IOException{
+    public TcpClient(String host, int port, String username, String password) throws IOException{
         this.host = host;
         this.port = port;
         this.username = username;
+        this.password = password;
         this.IP = InetAddress.getLocalHost().toString();
     }
 

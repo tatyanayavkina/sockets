@@ -13,9 +13,12 @@ public class StartTcpClient {
         Scanner scanner = new Scanner(System.in);
         String username = scanner.next();
 
+        System.out.println("Enter your password, please");
+        String password = scanner.next();
+
         /* Read user input */
         try{
-            TcpClient tcpClient = new TcpClient("localhost", 9999, username);
+            TcpClient tcpClient = new TcpClient("localhost", 9999, username, password);
             tcpClient.start();
         }catch(IOException e){
             System.out.println("Sorry, you can not chatting");

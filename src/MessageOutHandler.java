@@ -46,6 +46,8 @@ public class MessageOutHandler implements Runnable {
         }
     }
 
-
+    private void sendCredentials(){
+        
+    }
 }
 
