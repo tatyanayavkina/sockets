@@ -39,7 +39,24 @@ public class MessageInHandler implements Runnable{
         }
     }
 
-    public void getServerResponse(){
+    public UtilityMessage.StatusCodes getServerResponse(){
+        UtilityMessage utilityMessage;
+        UtilityMessage.StatusCodes code = UtilityMessage.StatusCodes.NONAUTHORIZED;
 
+        try {
+            utilityMessage = (UtilityMessage) reader.readObject();
+            code = utilityMessage.getCode();
+            writer.write(code.getDescription());
+            writer.flush();
+
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи сообщения.");
+            System.exit(-1);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Ошибка при чтении сообщения.");
+            System.exit(-1);
+        }
+
+        return code;
     }
 }

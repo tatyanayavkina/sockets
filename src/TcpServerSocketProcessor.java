@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -40,17 +42,23 @@ public class TcpServerSocketProcessor implements Runnable{
     public void run(){
         ArrayList<Message> messageList;
 
-        // client has just connected to server, send him last 10 messages
-        tcpServer.sendLastMessages(id);
         try {
-            while ( (messageList = (ArrayList<Message>) reader.readObject()) != null) {
-                tcpServer.sendMessageToConnectedClients(id, messageList);
+            boolean isAuthenticated = authenticate();
+            sendAuthenticateMessage(isAuthenticated);
 
-                for(Message message : messageList){
-                    tcpServer.storeMessage(message);
+            if(isAuthenticated){
+                // client has just connected to server, send him last 10 messages
+                tcpServer.sendLastMessages(id);
 
-                    System.out.println( message.toOutStr() );
-                    System.out.flush();
+                while ( (messageList = (ArrayList<Message>) reader.readObject()) != null) {
+                    tcpServer.sendMessageToConnectedClients(id, messageList);
+
+                    for(Message message : messageList){
+                        tcpServer.storeMessage(message);
+
+                        System.out.println( message.toOutStr() );
+                        System.out.flush();
+                    }
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -59,15 +67,16 @@ public class TcpServerSocketProcessor implements Runnable{
             System.out.println( "Reading error." );
         }
         finally {
-            try{
-                System.out.println("Cancel client " + id);
-                reader.close();
-                writer.close();
-                clientSocket.close();
-                tcpServer.removeConnection(id);
-            }catch(IOException e){
-                e.printStackTrace();
-            }
+            tcpServer.removeConnection(id);
+//            try{
+//                System.out.println("Cancel client " + id);
+//                reader.close();
+//                writer.close();
+//                clientSocket.close();
+//
+//            }catch(IOException e){
+//                e.printStackTrace();
+//            }
 
         }
     }
@@ -78,6 +87,41 @@ public class TcpServerSocketProcessor implements Runnable{
             writer.flush();
         }catch(IOException e){
             System.out.println("Message writing error.");
+        }
+
+    }
+
+    private boolean authenticate(){
+        Pair<String, String> credentials;
+        Boolean isAuthenticated = false;
+        try{
+            credentials = (Pair<String,String>) reader.readObject();
+            isAuthenticated = tcpServer.isUserRegistered(credentials.getKey(),credentials.getValue());
+
+        } catch (ClassNotFoundException e){
+            System.out.println("Can not read");
+        } catch (IOException e){
+            System.out.println("IOException");
+        }
+
+        return isAuthenticated;
+
+    }
+
+    private void sendAuthenticateMessage(boolean isAuthenticated){
+        UtilityMessage utilityMessage;
+
+        if(isAuthenticated){
+            utilityMessage = new UtilityMessage(UtilityMessage.StatusCodes.AUTHORIZED);
+        } else {
+            utilityMessage = new UtilityMessage(UtilityMessage.StatusCodes.NONAUTHORIZED);
+        }
+
+        try{
+            writer.writeObject(utilityMessage);
+            writer.flush();
+        } catch (IOException e){
+            System.out.println("System is not available");
         }
 
     }

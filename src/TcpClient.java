@@ -65,7 +65,16 @@ public class TcpClient {
 
    private void authorize(){
        writer.sendCredentials(username, password);
-       reader.getServerResponse();
+       UtilityMessage.StatusCodes code = reader.getServerResponse();
+
+       if (code.equals(UtilityMessage.StatusCodes.NONAUTHORIZED)){
+           try{
+               socket.close();
+               System.exit(-1);
+           } catch(IOException e){
+               System.out.println("Connection closed");
+           }
+       }
    }
 
     /**********************************************************************/
