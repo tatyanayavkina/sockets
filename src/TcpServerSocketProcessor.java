@@ -67,16 +67,14 @@ public class TcpServerSocketProcessor implements Runnable{
             System.out.println( "Reading error." );
         }
         finally {
-            tcpServer.removeConnection(id);
-//            try{
-//                System.out.println("Cancel client " + id);
-//                reader.close();
-//                writer.close();
-//                clientSocket.close();
-//
-//            }catch(IOException e){
-//                e.printStackTrace();
-//            }
+            try{
+                System.out.println("Cancel client " + id);
+                reader.close();
+                writer.close();
+                tcpServer.removeConnection(id);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
 
         }
     }

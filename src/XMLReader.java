@@ -16,7 +16,7 @@ public class XMLReader {
     private static final String connection = "connectionlimit";
 
     private static final String pathToUsers = "users.xml";
-    private static final String users = "users";
+    private static final String user = "user";
     private static final String name = "name";
     private static final String password = "password";
 
@@ -72,7 +72,7 @@ public class XMLReader {
         try{
             Element root = getRootElement(pathToUsers);
 
-            NodeList nList = root.getElementsByTagName(users);
+            NodeList nList = root.getElementsByTagName(user);
             int nListLength = nList.getLength();
 
             for( int i = 0; i <nListLength; i++ ){

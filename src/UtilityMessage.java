@@ -1,11 +1,13 @@
+import java.io.Serializable;
+
 /**
  * Created by Татьяна on 04.09.2015.
  */
-public class UtilityMessage {
+public class UtilityMessage implements Serializable{
     private StatusCodes code;
 
     public enum StatusCodes{
-        AUTHORIZED(200, ""),
+        AUTHORIZED(200, "You are welcome!"),
         NONAUTHORIZED(401, "Login/password error");
 
         private int code;
