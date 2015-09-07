@@ -6,30 +6,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Created by ������� on 21.08.2015.
+ * Created on 21.08.2015.
  */
 public class TcpServer {
     private final int port;
     private ServerSocket serverSocket = null;
-    private HashMap<String,String> users;
-    private Map<Integer, TcpServerSocketProcessor> connectionsMap;
-    private final ArrayList<Message> messageList;
-    private final int messageStoreLimit;
-    private  final int connectionLimit;
-    private  int connectionCounter;
+    private ConnectionAutoIncrementMap connectionsMap;
+    private ChatServerProcessor chatServerProcessor;
+    private final int connectionLimit;
+
     private ThreadPoolExecutor threadPoolExecutor;
-
-
     /**********************************************************************************/
 
-    public TcpServer( Config config, HashMap<String,String> users){
-        this.port = config.getPort();
-        this.messageStoreLimit = config.getMessageLimit();
-        this.connectionLimit = config.getConnectionLimit();
-        this.users = users;
-        this.connectionsMap = new HashMap<Integer, TcpServerSocketProcessor>();
-        this.connectionCounter = 0;
-        this.messageList = new ArrayList<Message>(messageStoreLimit);
+    public TcpServer(int port, int connectionLimit, ChatServerProcessor chatServerProcessor){
+        this.port = port;
+        this.connectionLimit = connectionLimit;
+        this.connectionsMap = new ConnectionAutoIncrementMap();
+        this.chatServerProcessor = chatServerProcessor;
         this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(connectionLimit);
     }
 
@@ -46,21 +39,23 @@ public class TcpServer {
     }
 
     private void createClientSocket(){
+        int connectionId;
+
         while (true) {
             try {
-               Socket clientSocket = serverSocket.accept();
+                Socket clientSocket = serverSocket.accept();
                 // do not connect new clients when all threads are busy
                 if ( threadPoolExecutor.getActiveCount() == connectionLimit){
+                    //TODO: В идеальном мире нужно как-то сообщатиь клиенту, что сервер занят.
                     clientSocket.close();
                     continue;
                 }
-
-               int connectionId = connectionCounter++;
-               System.out.println("Client connected " + connectionId);
-               TcpServerSocketProcessor connection = new TcpServerSocketProcessor( clientSocket, connectionId, this );
-               connection.flush();
-               connectionsMap.put(connectionId, connection);
-               threadPoolExecutor.execute( connection );
+                connectionId = connectionsMap.getNextId();
+                System.out.println("Client connected " + connectionId);
+                TcpServerSocketProcessor connection = new TcpServerSocketProcessor( connectionId, clientSocket, chatServerProcessor );
+                connection.flush();
+                connectionsMap.pushConnection(connectionId, connection);
+                threadPoolExecutor.execute( connection );
 
             } catch (IOException e) {
 
@@ -81,56 +76,12 @@ public class TcpServer {
 
     /**********************************************************************************/
     /* Public methods */
-
-    public void sendMessageToConnectedClients(int clientId,  ArrayList<Message> messageList){
-        //send message to all connected clients except client with id
-        Set<Map.Entry<Integer, TcpServerSocketProcessor>> set = connectionsMap.entrySet();
-
-        for ( Map.Entry<Integer, TcpServerSocketProcessor> s : set ) {
-            Integer key = s.getKey();
-
-            if(key != clientId){
-                TcpServerSocketProcessor socketProcessor = s.getValue();
-                socketProcessor.sendMessage( messageList );
-            }
-        }
-
-    }
-
-    public void sendLastMessages(int id){
-        TcpServerSocketProcessor tcpServerSocketProcessor = connectionsMap.get(id);
-
-        synchronized ( messageList ){
-            if( !messageList.isEmpty() ){
-                tcpServerSocketProcessor.sendMessage(messageList);
-            }
-        }
-    }
-
-    public void storeMessage(Message message){
-        synchronized ( messageList ){
-            if ( messageList.size() == messageStoreLimit){
-                messageList.remove(0);
-            }
-
-            messageList.add( message );
-        }
+    public Iterable<TcpServerSocketProcessor> getAllConnectionsExceptOne(int exceptConnectionId){
+        return connectionsMap.getAllExceptOne(exceptConnectionId);
     }
 
     public void removeConnection(int connectionId){
         connectionsMap.remove( connectionId );
-    }
-
-    public boolean isUserRegistered(String username, String password){
-        boolean isRegistered = false;
-        if (users.containsKey(username)){
-            String userPass = users.get(username);
-            if (userPass.equals(password)){
-                isRegistered = true;
-            }
-        }
-
-        return isRegistered;
     }
 
     public void start(){

@@ -70,10 +70,9 @@ public class TcpClient {
        if (code.equals(UtilityMessage.StatusCodes.NONAUTHORIZED)){
            try{
                socket.close();
-               System.exit(-1);
            } catch(IOException e){
-               System.out.println("Connection closed");
            }
+           System.exit(-1);
        }
    }
 

@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 /**
- * Created by Татьяна on 21.08.2015.
+ * Created on 21.08.2015.
  */
 public class TcpServerSocketProcessor implements Runnable{
 
@@ -18,10 +18,12 @@ public class TcpServerSocketProcessor implements Runnable{
     private ObjectInputStream reader;
     private ObjectOutputStream writer;
 
-    public TcpServerSocketProcessor(Socket clientSocket, int id, TcpServer tcpServer) throws Throwable{
+    private ChatServerProcessor chatServerProcessor;
+
+    public TcpServerSocketProcessor(int id, Socket clientSocket, ChatServerProcessor chatServerProcessor) throws Throwable{
         this.id = id;
         this.clientSocket = clientSocket;
-        this.tcpServer = tcpServer;
+        this.chatServerProcessor = chatServerProcessor;
 
         this.in = clientSocket.getInputStream();
         this.out = clientSocket.getOutputStream();
@@ -40,88 +42,42 @@ public class TcpServerSocketProcessor implements Runnable{
     }
 
     public void run(){
-        ArrayList<Message> messageList;
 
         try {
-            boolean isAuthenticated = authenticate();
-            sendAuthenticateMessage(isAuthenticated);
-
-            if(isAuthenticated){
-                // client has just connected to server, send him last 10 messages
-                tcpServer.sendLastMessages(id);
-
-                while ( (messageList = (ArrayList<Message>) reader.readObject()) != null) {
-                    tcpServer.sendMessageToConnectedClients(id, messageList);
-
-                    for(Message message : messageList){
-                        tcpServer.storeMessage(message);
-
-                        System.out.println( message.toOutStr() );
-                        System.out.flush();
-                    }
-                }
-            }
+            chatServerProcessor.handleNewClient(this);
+            chatServerProcessor.handleInputMessage(this.id, this);
+        } catch (IOException e) {
+            // log
         } catch (ClassNotFoundException e) {
-            System.out.println( "Serialization error." );
-        } catch (IOException e){
-            System.out.println( "Reading error." );
+            // log
         }
-        finally {
-            try{
-                System.out.println("Cancel client " + id);
-                reader.close();
-                writer.close();
-                tcpServer.removeConnection(id);
-            }catch(IOException e){
-                e.printStackTrace();
-            }
 
-        }
+        closeConnection();
     }
 
-    public void sendMessage( ArrayList<Message> messageList){
-        try{
-            writer.writeObject(messageList);
-            writer.flush();
-        }catch(IOException e){
-            System.out.println("Message writing error.");
-        }
-
+    public boolean sendMessage( ArrayList<Message> messageList) throws IOException{
+        writer.writeObject(messageList);
+        writer.flush();
+        return true;
     }
 
-    private boolean authenticate(){
-        Pair<String, String> credentials;
-        Boolean isAuthenticated = false;
-        try{
-            credentials = (Pair<String,String>) reader.readObject();
-            isAuthenticated = tcpServer.isUserRegistered(credentials.getKey(),credentials.getValue());
-
-        } catch (ClassNotFoundException e){
-            System.out.println("Can not read");
-        } catch (IOException e){
-            System.out.println("IOException");
-        }
-
-        return isAuthenticated;
-
+    public Object readObject() throws ClassNotFoundException, IOException {
+        return reader.readObject();
     }
 
-    private void sendAuthenticateMessage(boolean isAuthenticated){
-        UtilityMessage utilityMessage;
-
-        if(isAuthenticated){
-            utilityMessage = new UtilityMessage(UtilityMessage.StatusCodes.AUTHORIZED);
-        } else {
-            utilityMessage = new UtilityMessage(UtilityMessage.StatusCodes.NONAUTHORIZED);
-        }
-
-        try{
-            writer.writeObject(utilityMessage);
-            writer.flush();
-        } catch (IOException e){
-            System.out.println("System is not available");
-        }
-
+    public boolean writeObject(Object obj) throws IOException{
+        writer.writeObject(obj);
+        writer.flush();
+        return true;
     }
 
+    private void closeConnection() {
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            // log
+        }
+
+        // removeConnection
+    }
 }
