@@ -48,8 +48,7 @@ public class MessageOutHandler implements Runnable {
         }
     }
 
-    public void sendCredentials(String username, String password){
-        Pair<String,String> credentials = new Pair<String,String>(username, password);
+    public void sendCredentials(UserAuthenticationData credentials){
         try{
             writer.writeObject(credentials);
             writer.flush();

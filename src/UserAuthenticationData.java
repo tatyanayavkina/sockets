@@ -1,4 +1,3 @@
-import javax.jws.soap.SOAPBinding;
 import java.io.Serializable;
 
 /**

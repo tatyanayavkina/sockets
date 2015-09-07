@@ -7,7 +7,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
- * Created by Татьяна on 21.08.2015.
+ * Created on 21.08.2015.
  */
 public class TcpClient {
     private String host;
@@ -64,7 +64,8 @@ public class TcpClient {
    }
 
    private void authorize(){
-       writer.sendCredentials(username, password);
+       UserAuthenticationData credentials = new UserAuthenticationData(username, password);
+       writer.sendCredentials(credentials);
        UtilityMessage.StatusCodes code = reader.getServerResponse();
 
        if (code.equals(UtilityMessage.StatusCodes.NONAUTHORIZED)){
