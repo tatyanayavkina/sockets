@@ -2,18 +2,20 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- * Created by Татьяна on 01.09.2015.
+ * Created  on 01.09.2015.
  */
 public class MessageInHandler implements Runnable{
     private BufferedWriter writer;
     private ObjectInputStream reader;
+    private ChatClientProcessor chatClientProcessor;
 
-    public MessageInHandler(InputStream in, OutputStream out) throws IOException{
+    public MessageInHandler(InputStream in, OutputStream out, ChatClientProcessor chatClientProcessor) throws IOException{
         this.reader = new ObjectInputStream( in );
         this.writer =  new BufferedWriter( new OutputStreamWriter( out ) );
+        this.chatClientProcessor = chatClientProcessor;
     }
 
-    public void run(){
+    public void run() {
         ArrayList<Message> messageList;
         String outStr;
         try {
@@ -31,32 +33,18 @@ public class MessageInHandler implements Runnable{
 
         } catch (IOException e) {
             System.out.println("Ошибка при записи сообщения.");
-            System.exit(-1);
-        }
-        catch (ClassNotFoundException e) {
-            System.out.println("Ошибка при чтении сообщения.");
-            System.exit(-1);
-        }
-    }
-
-    public UtilityMessage.StatusCodes getServerResponse(){
-        UtilityMessage utilityMessage;
-        UtilityMessage.StatusCodes code = UtilityMessage.StatusCodes.NONAUTHORIZED;
-
-        try {
-            utilityMessage = (UtilityMessage) reader.readObject();
-            code = utilityMessage.getCode();
-            writer.write(code.getDescription());
-            writer.flush();
-
-        } catch (IOException e) {
-            System.out.println("Ошибка при записи сообщения.");
-            System.exit(-1);
         } catch (ClassNotFoundException e) {
             System.out.println("Ошибка при чтении сообщения.");
-            System.exit(-1);
         }
-
-        return code;
     }
+
+    public Object readObject() throws IOException, ClassNotFoundException{
+        return reader.readObject();
+    }
+
+    public void write(String text) throws IOException{
+        writer.write(text);
+        writer.flush();
+    }
+
 }

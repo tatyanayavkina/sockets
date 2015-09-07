@@ -32,13 +32,8 @@ public class TcpServerSocketProcessor implements Runnable{
         this.writer = new ObjectOutputStream( out );
     }
 
-    public void flush(){
-        try{
-            writer.flush();
-        } catch (IOException e) {
-            System.out.println("Headers sending error");
-            System.exit(-1);
-        }
+    public void flush() throws IOException{
+        writer.flush();
     }
 
     public void run(){

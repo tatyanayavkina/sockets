@@ -65,7 +65,7 @@ public class TcpServer {
                 System.out.println( "Error with port connection: " + port );
                 System.exit(-1);
 
-            }catch (Throwable e){
+            } catch (Throwable e){
 
                 System.out.println( "Error with port connection: " + port + ". Input/Output streams are unavailable." );
                 System.exit(-1);

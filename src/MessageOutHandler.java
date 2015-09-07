@@ -4,29 +4,30 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- * Created by Татьяна on 01.09.2015.
+ * Created on 01.09.2015.
  */
 public class MessageOutHandler implements Runnable {
     private ObjectOutputStream writer;
     private BufferedReader reader;
+
     private String author;
     private String IP;
 
-    public MessageOutHandler(InputStream in, OutputStream out, String author, String IP) throws IOException{
+    public MessageOutHandler(InputStream in, OutputStream out) throws IOException{
         this.reader = new BufferedReader( new InputStreamReader( in ) );
         this.writer =  new ObjectOutputStream( out );
-        this.author = author;
-        this.IP = IP;
     }
 
-    public void flush(){
-        try{
-            writer.flush();
-        } catch (IOException e) {
-            System.out.println("Headers sending error");
-            System.exit(-1);
-        }
+    public void flush() throws IOException{
+        writer.flush();
+    }
 
+    public void setAuthor(String author){
+        this.author = author;
+    }
+
+    public void setIP(String IP){
+        this.IP = IP;
     }
 
     public void run(){
@@ -44,18 +45,13 @@ public class MessageOutHandler implements Runnable {
             writer.close();
         } catch (IOException e) {
             System.out.println("Ошибка при записи сообщения.");
-            System.exit(-1);
         }
     }
 
-    public void sendCredentials(UserAuthenticationData credentials){
-        try{
-            writer.writeObject(credentials);
-            writer.flush();
-        } catch (IOException e){
-            System.out.println("Sorry, connection problems");
-        }
-
+    public void writeObject(Object obj) throws IOException{
+        writer.writeObject(obj);
+        writer.flush();
     }
+
 }
 

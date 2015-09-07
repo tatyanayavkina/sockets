@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -13,79 +12,65 @@ public class TcpClient {
     private String host;
     private int port;
 
-    private String username;
-    private String password;
-    private String IP;
+    private ChatClientProcessor chatClientProcessor;
     private Socket socket;
     private MessageInHandler reader;
     private MessageOutHandler writer;
 
     /************************************************************************/
 
-    public TcpClient(String host, int port, String username, String password) throws IOException{
+    public TcpClient(String host, int port, ChatClientProcessor chatClientProcessor) {
         this.host = host;
         this.port = port;
-        this.username = username;
-        this.password = password;
-        this.IP = InetAddress.getLocalHost().toString();
+        this.chatClientProcessor = chatClientProcessor;
     }
 
     /***********************************************************************/
     /* Private methods */
 
-    private void createSocket(){
-        try {
-            socket = new Socket(host, port);
-        } catch (UnknownHostException e) {
-            System.out.println("Unknonw host: " + host);
-            System.exit(-1);
-        } catch (IOException e) {
-            System.out.println("I/O error while socket creation " + host + ":" + port);
+    private void createSocket() throws IOException{
+        socket = new Socket(host, port);
+    }
+
+   private void createReaderWriter() throws IOException{
+       OutputStream out = socket.getOutputStream();
+       writer = new MessageOutHandler(System.in, out);
+       writer.flush();
+
+       InputStream in = socket.getInputStream();
+       reader = new MessageInHandler(in, System.out, chatClientProcessor);
+   }
+
+
+    private void close(){
+        try{
+            socket.close();
+        } catch (IOException e){
+            System.out.println("Socket closing error");
             System.exit(-1);
         }
     }
-
-   private void createReaderWriter (){
-       InputStream in = null;
-       OutputStream out = null;
-       try{
-           out = socket.getOutputStream();
-           writer = new MessageOutHandler(System.in, out, username, IP);
-           writer.flush();
-
-           in = socket.getInputStream();
-           reader = new MessageInHandler(in, System.out);
-       } catch( SocketException ex){
-           System.out.println("Sorry, server is busy.");
-           System.exit(-1);
-       } catch( IOException ex ){
-           ex.printStackTrace();
-       }
-   }
-
-   private void authorize(){
-       UserAuthenticationData credentials = new UserAuthenticationData(username, password);
-       writer.sendCredentials(credentials);
-       UtilityMessage.StatusCodes code = reader.getServerResponse();
-
-       if (code.equals(UtilityMessage.StatusCodes.NONAUTHORIZED)){
-           try{
-               socket.close();
-           } catch(IOException e){
-           }
-           System.exit(-1);
-       }
-   }
 
     /**********************************************************************/
     /* Public methods */
 
     public void start(){
-        createSocket();
-        createReaderWriter();
-        authorize();
+        try {
+            createSocket();
+            createReaderWriter();
+            chatClientProcessor.handleConnection(writer, reader);
 
-        new Thread(reader).start();
-        new Thread(writer).start();
+        } catch (UnknownHostException e) {
+            System.out.println("UnknownHostException");
+        } catch (ClassNotFoundException e){
+            System.out.println("ClassNotFoundException");
+        } catch (IOException e){
+            System.out.println("IOException");
+        }
+//        finally {
+//            close();
+//        }
+
     }
+
 }

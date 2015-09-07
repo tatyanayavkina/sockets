@@ -18,8 +18,8 @@ public class StartTcpClient {
 
         /* Read user input */
         try{
-            TcpClient tcpClient = new TcpClient("localhost", 9999, username, password);
-            tcpClient.start();
+            ChatClientProcessor chatClientProcessor = new ChatClientProcessor("localhost", 9999, username, password);
+            chatClientProcessor.start();
         }catch(IOException e){
             System.out.println("Sorry, you can not chatting");
             System.exit(-1);
