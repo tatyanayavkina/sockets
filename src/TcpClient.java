@@ -34,22 +34,14 @@ public class TcpClient {
 
    private void createReaderWriter() throws IOException{
        OutputStream out = socket.getOutputStream();
-       writer = new MessageOutHandler(System.in, out);
+       writer = new MessageOutHandler(System.in, out, this);
        writer.flush();
 
        InputStream in = socket.getInputStream();
-       reader = new MessageInHandler(in, System.out, chatClientProcessor);
+       reader = new MessageInHandler(in, System.out, this);
    }
 
 
-    private void close(){
-        try{
-            socket.close();
-        } catch (IOException e){
-            System.out.println("Socket closing error");
-            System.exit(-1);
-        }
-    }
 
     /**********************************************************************/
     /* Public methods */
@@ -62,15 +54,24 @@ public class TcpClient {
 
         } catch (UnknownHostException e) {
             System.out.println("UnknownHostException");
+            close();
         } catch (ClassNotFoundException e){
             System.out.println("ClassNotFoundException");
+            close();
         } catch (IOException e){
             System.out.println("IOException");
+            close();
         }
-//        finally {
-//            close();
-//        }
 
+    }
+
+    public void close(){
+        try{
+            socket.close();
+        } catch (IOException e){
+            System.out.println("Socket closing error");
+            System.exit(-1);
+        }
     }
 
 }

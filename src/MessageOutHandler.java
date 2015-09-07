@@ -9,13 +9,15 @@ import java.util.ArrayList;
 public class MessageOutHandler implements Runnable {
     private ObjectOutputStream writer;
     private BufferedReader reader;
+    private TcpClient tcpClient;
 
     private String author;
     private String IP;
 
-    public MessageOutHandler(InputStream in, OutputStream out) throws IOException{
+    public MessageOutHandler(InputStream in, OutputStream out, TcpClient tcpClient) throws IOException{
         this.reader = new BufferedReader( new InputStreamReader( in ) );
         this.writer =  new ObjectOutputStream( out );
+        this.tcpClient = tcpClient;
     }
 
     public void flush() throws IOException{
@@ -45,6 +47,8 @@ public class MessageOutHandler implements Runnable {
             writer.close();
         } catch (IOException e) {
             System.out.println("Ошибка при записи сообщения.");
+        } finally {
+            tcpClient.close();
         }
     }
 
