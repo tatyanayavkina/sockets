@@ -44,15 +44,18 @@ public class TcpServerSocketProcessor implements Runnable{
     public void run(){
 
         try {
-            chatServerProcessor.handleNewClient(this);
-            chatServerProcessor.handleInputMessage(this.id, this);
+            // if connection was successful
+            if (chatServerProcessor.handleNewClient(this)){
+                // than handle input messages from client
+                chatServerProcessor.handleInputMessage(this.id, this);
+            }
         } catch (IOException e) {
             // log
         } catch (ClassNotFoundException e) {
             // log
+        } finally {
+            closeConnection();
         }
-
-        closeConnection();
     }
 
     public boolean sendMessage( ArrayList<Message> messageList) throws IOException{
@@ -76,8 +79,8 @@ public class TcpServerSocketProcessor implements Runnable{
             clientSocket.close();
         } catch (IOException e) {
             // log
+        } finally {
+            chatServerProcessor.removeConnection(id);
         }
-
-        // removeConnection
     }
 }

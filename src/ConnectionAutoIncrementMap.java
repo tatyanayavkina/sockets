@@ -22,13 +22,17 @@ public class ConnectionAutoIncrementMap extends HashMap<Integer, TcpServerSocket
     }
 
     public Iterable<TcpServerSocketProcessor> getAllExceptOne(int exceptConnectionId) {
-        int resultSize = this.size() - 1;
-        if (resultSize < 1)
-            return new ArrayList<TcpServerSocketProcessor>(0);
+        ArrayList<TcpServerSocketProcessor> result;
+        Set<Entry<Integer, TcpServerSocketProcessor>> set;
+        synchronized (this){
+            int resultSize = size() - 1;
+            if (resultSize < 1)
+                return new ArrayList<TcpServerSocketProcessor>(0);
 
-        ArrayList<TcpServerSocketProcessor> result = new ArrayList<TcpServerSocketProcessor>(resultSize);
+            result = new ArrayList<TcpServerSocketProcessor>(resultSize);
+            set = entrySet();
+        }
 
-        Set<Entry<Integer, TcpServerSocketProcessor>> set = this.entrySet();
         for ( Map.Entry<Integer, TcpServerSocketProcessor> s : set ) {
             Integer key = s.getKey();
 

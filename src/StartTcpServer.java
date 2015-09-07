@@ -9,6 +9,7 @@ public class StartTcpServer {
         Config config = XMLReader.readParams();
         HashMap<String, String> users = XMLReader.readUsers();
 
-
+        ChatServerProcessor chatServerProcessor = new ChatServerProcessor(config, users);
+        chatServerProcessor.start();
     }
 }

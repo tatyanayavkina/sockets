@@ -40,10 +40,14 @@ public class ChatServerProcessor {
         return false;
     }
 
-    public void handleInputMessage(int clientId, TcpServerSocketProcessor tcpServerSocketProcessor) {
-        // read an input message
-        // store it
-        // send it to all connections except the one
+    public void handleInputMessage(int clientId, TcpServerSocketProcessor tcpServerSocketProcessor) throws IOException, ClassNotFoundException{
+        ArrayList<Message> messages;
+        while( ( messages = (ArrayList<Message>) tcpServerSocketProcessor.readObject() )!= null ){
+            for(Message message: messages){
+                storeMessage(message);
+            }
+            sendMessageToConnectedClients(clientId, messages);
+        }
     }
 
     /**********************************************************************************/
@@ -62,8 +66,23 @@ public class ChatServerProcessor {
     }
 
     private boolean authenticate(TcpServerSocketProcessor tcpServerSocketProcessor) throws IOException, ClassNotFoundException{
-        UserAuthenticationData credentials = this.parseCredentials(tcpServerSocketProcessor);
-        return ( credentials != null && this.isUserRegistered(credentials) );
+        UserAuthenticationData credentials = parseCredentials(tcpServerSocketProcessor);
+        boolean isAuthenticated = ( credentials != null && isUserRegistered(credentials) );
+        sendAuthorizationMessage(tcpServerSocketProcessor, isAuthenticated);
+
+        return isAuthenticated;
+    }
+
+    private void sendAuthorizationMessage(TcpServerSocketProcessor tcpServerSocketProcessor, boolean isAuthenticated) throws IOException{
+        UtilityMessage utilityMessage;
+
+        if (isAuthenticated){
+            utilityMessage = new UtilityMessage(UtilityMessage.StatusCodes.AUTHORIZED);
+        } else {
+            utilityMessage = new UtilityMessage(UtilityMessage.StatusCodes.NONAUTHORIZED);
+        }
+
+        tcpServerSocketProcessor.writeObject(utilityMessage);
     }
 
     private void sendMessageToConnectedClients(int clientId,  ArrayList<Message> messageList) throws IOException{
@@ -108,6 +127,10 @@ public class ChatServerProcessor {
         }
 
         return isRegistered;
+    }
+
+    public void removeConnection(int connectionId){
+        tcpServer.removeConnection(connectionId);
     }
 
     public void start(){

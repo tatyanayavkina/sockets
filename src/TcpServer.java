@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TcpServer {
     private final int port;
     private ServerSocket serverSocket = null;
-    private ConnectionAutoIncrementMap connectionsMap;
+    private final ConnectionAutoIncrementMap connectionsMap;
     private ChatServerProcessor chatServerProcessor;
     private final int connectionLimit;
 
@@ -46,7 +46,7 @@ public class TcpServer {
                 Socket clientSocket = serverSocket.accept();
                 // do not connect new clients when all threads are busy
                 if ( threadPoolExecutor.getActiveCount() == connectionLimit){
-                    //TODO: В идеальном мире нужно как-то сообщатиь клиенту, что сервер занят.
+                    //TODO: В идеальном мире нужно как-то сообщать клиенту, что сервер занят.
                     clientSocket.close();
                     continue;
                 }
@@ -54,7 +54,10 @@ public class TcpServer {
                 System.out.println("Client connected " + connectionId);
                 TcpServerSocketProcessor connection = new TcpServerSocketProcessor( connectionId, clientSocket, chatServerProcessor );
                 connection.flush();
-                connectionsMap.pushConnection(connectionId, connection);
+
+                synchronized (connectionsMap){
+                    connectionsMap.pushConnection(connectionId, connection);
+                }
                 threadPoolExecutor.execute( connection );
 
             } catch (IOException e) {
