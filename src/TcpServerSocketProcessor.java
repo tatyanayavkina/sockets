@@ -11,14 +11,12 @@ public class TcpServerSocketProcessor implements Runnable{
 
     private final int id;
     private Socket clientSocket;
-    private TcpServer tcpServer;
+    private ChatServerProcessor chatServerProcessor;
     private InputStream in;
     private OutputStream out;
 
     private ObjectInputStream reader;
     private ObjectOutputStream writer;
-
-    private ChatServerProcessor chatServerProcessor;
 
     public TcpServerSocketProcessor(int id, Socket clientSocket, ChatServerProcessor chatServerProcessor) throws Throwable{
         this.id = id;
@@ -75,6 +73,7 @@ public class TcpServerSocketProcessor implements Runnable{
         } catch (IOException e) {
             // log
         } finally {
+            System.out.println("Cancel connection: " + id);
             chatServerProcessor.removeConnection(id);
         }
     }

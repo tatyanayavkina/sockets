@@ -13,11 +13,14 @@ public class MessageOutHandler implements Runnable {
 
     private String author;
     private String IP;
+    private boolean connected;
+    private final String CLOSE = "@close";
 
     public MessageOutHandler(InputStream in, OutputStream out, TcpClient tcpClient) throws IOException{
         this.reader = new BufferedReader( new InputStreamReader( in ) );
         this.writer =  new ObjectOutputStream( out );
         this.tcpClient = tcpClient;
+        this.connected = true;
     }
 
     public void flush() throws IOException{
@@ -35,7 +38,14 @@ public class MessageOutHandler implements Runnable {
     public void run(){
         String ln;
         try {
-            while ( ( ln = reader.readLine() ) != null ) {
+            while ( connected ) {
+                ln = reader.readLine();
+
+                if ( ln.equals(CLOSE) ){
+                    connected = false;
+                    continue;
+                }
+
                 Message message = new Message(author, IP, ln);
                 ArrayList<Message> messageList = new ArrayList<Message>();
                 messageList.add(message);
