@@ -6,9 +6,7 @@ import org.w3c.dom.Element;
 import java.io.File;
 import java.util.HashMap;
 
-/**
- * Created by Татьяна on 03.09.2015.
- */
+
 public class XMLReader {
     private static final String pathToParams = "params.xml";
     private static final String port = "port";
