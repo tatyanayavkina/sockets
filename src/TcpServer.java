@@ -5,9 +5,6 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-/**
- * Created on 21.08.2015.
- */
 public class TcpServer {
     private final int port;
     private ServerSocket serverSocket = null;
