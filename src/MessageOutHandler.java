@@ -3,9 +3,6 @@ import javafx.util.Pair;
 import java.io.*;
 import java.util.ArrayList;
 
-/**
- * Created on 01.09.2015.
- */
 public class MessageOutHandler implements Runnable {
     private ObjectOutputStream writer;
     private BufferedReader reader;
@@ -56,7 +53,7 @@ public class MessageOutHandler implements Runnable {
             reader.close();
             writer.close();
         } catch (IOException e) {
-            System.out.println("Ошибка при записи сообщения.");
+            System.out.println("ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ Г§Г ГЇГЁГ±ГЁ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї.");
         } finally {
             tcpClient.close();
         }
