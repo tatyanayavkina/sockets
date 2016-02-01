@@ -2,9 +2,7 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-/**
- * Created by Татьяна on 21.08.2015.
- */
+
 public class StartTcpClient {
 
     public static void main(String[] args) {
