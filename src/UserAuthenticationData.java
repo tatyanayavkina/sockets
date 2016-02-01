@@ -1,8 +1,5 @@
 import java.io.Serializable;
 
-/**
- * Created on 07.09.2015.
- */
 public class UserAuthenticationData implements Serializable{
     private String name;
     private String password;
