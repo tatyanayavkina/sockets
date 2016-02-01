@@ -5,9 +5,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-/**
- * Created on 21.08.2015.
- */
+
 public class TcpClient {
     private String host;
     private int port;
