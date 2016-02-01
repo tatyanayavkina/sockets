@@ -2,9 +2,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created  on 05.09.2015.
- */
 public class ChatServerProcessor {
     private HashMap<String,String> users;
     private final int messageStoreLimit;
