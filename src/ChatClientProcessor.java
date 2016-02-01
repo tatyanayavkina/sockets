@@ -1,9 +1,6 @@
 import java.io.IOException;
 import java.net.InetAddress;
 
-/**
- * Created on 07.09.2015.
- */
 public class ChatClientProcessor {
     private String username;
     private String password;
