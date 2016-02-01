@@ -1,8 +1,5 @@
 import java.util.HashMap;
 
-/**
- * Created on 21.08.2015.
- */
 public class StartTcpServer {
 
     public static void main(String[] args) {
