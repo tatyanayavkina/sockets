@@ -1,9 +1,7 @@
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Created by Татьяна on 01.09.2015.
- */
+
 public class Message implements Serializable{
     private String author;
     private String IP;
