@@ -1,6 +1,4 @@
-/**
- * Created by Татьяна on 03.09.2015.
- */
+
 public class Config {
     private final int port;
     private final int messageLimit;
