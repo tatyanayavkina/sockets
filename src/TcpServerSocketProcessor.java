@@ -4,9 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
-/**
- * Created on 21.08.2015.
- */
+
 public class TcpServerSocketProcessor implements Runnable{
 
     private final int id;
