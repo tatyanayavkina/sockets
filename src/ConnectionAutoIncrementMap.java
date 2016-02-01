@@ -3,9 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by User on 05.09.2015.
- */
+
 public class ConnectionAutoIncrementMap extends HashMap<Integer, TcpServerSocketProcessor> {
     public int connectionCounter;
 
