@@ -1,9 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-/**
- * Created  on 01.09.2015.
- */
+
 public class MessageInHandler implements Runnable{
     private BufferedWriter writer;
     private ObjectInputStream reader;
@@ -32,9 +30,9 @@ public class MessageInHandler implements Runnable{
             writer.close();
 
         } catch (IOException e) {
-            System.out.println("Ошибка при записи сообщения.");
+            System.out.println("ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ Г§Г ГЇГЁГ±ГЁ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї.");
         } catch (ClassNotFoundException e) {
-            System.out.println("Ошибка при чтении сообщения.");
+            System.out.println("ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ Г·ГІГҐГ­ГЁГЁ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї.");
         } finally {
             tcpClient.close();
         }
