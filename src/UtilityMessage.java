@@ -1,8 +1,5 @@
 import java.io.Serializable;
 
-/**
- * Created by Татьяна on 04.09.2015.
- */
 public class UtilityMessage implements Serializable{
     private StatusCodes code;
 
